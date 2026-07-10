@@ -1,0 +1,6 @@
+{
+  "name": "Shyam Express Pitch Deck",
+  "description": "An interactive, cinematic investor presentation deck for Shyam Express: Haare Ka Sahara.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

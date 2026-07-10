@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@utility gold-text {
+  background: linear-gradient(100deg, #B8860B 0%, #FFD978 25%, #B8860B 50%, #FFECB3 75%, #B8860B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(184,134,11,0.3));
+}
+
+@utility gold-border {
+  border-image: linear-gradient(90deg, #8B6914, #FFD978, #8B6914) 1;
+}
+
+@utility mandala {
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(184,134,11,0.18) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 50% 50%, rgba(184,134,11,0.12) 0 40%, transparent 41%),
+    radial-gradient(circle at 50% 50%, rgba(184,134,11,0.08) 0 70%, transparent 71%);
+  background-size: 48px 48px, 320px 320px, 560px 560px;
+  background-position: center;
+}
+
+@utility incense {
+  position: absolute;
+  width: 2px;
+  height: 120px;
+  background: linear-gradient(to top, transparent, rgba(255,248,231,0.18), rgba(184,134,11,0.25));
+  filter: blur(0.5px);
+  animation: rise 9s linear infinite;
+}
+
+@keyframes rise {
+  0% { transform: translateY(100vh) translateX(0) scaleY(0.8); opacity: 0; }
+  10% { opacity: 0.6; }
+  50% { transform: translateY(40vh) translateX(12px) scaleY(1.1); }
+  100% { transform: translateY(-20vh) translateX(-10px) scaleY(0.6); opacity: 0; }
+}
+
+@layer utilities {
+  .slide {
+    @media print {
+      break-after: page;
+      position: relative !important;
+      min-height: 100vh;
+    }
+  }
+}
