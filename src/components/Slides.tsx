@@ -30,25 +30,20 @@ import {
   Disc,
   Volume2,
   Pause,
-  HardDrive
+  HardDrive,
+  Phone
 } from "lucide-react";
 
-// @ts-ignore
-import khatuShyamHero from "../assets/images/khatu_shyam_hero_1783612474905.jpg";
-// @ts-ignore
-import sumedhMudgalkar from "../assets/images/sumedh_mudgalkar_1783617889941.jpg";
-// @ts-ignore
-import divyaDutta from "../assets/images/divya_dutta_actress_1783617903496.jpg";
-// @ts-ignore
-import profShyam from "../assets/images/prof_shyam_turnaround_1783617863544.jpg";
-// @ts-ignore
-import hemantMentoring from "../assets/images/hemant_mentoring_1783617934923.jpg";
-// @ts-ignore
-import hemantNilimDas from "../assets/images/hemant_nilim_das_1783617875633.jpg";
-// @ts-ignore
-import prajaktaMali from "../assets/images/prajakta_mali_actress_1783617922399.jpg";
-// @ts-ignore
-import shyamExpressLogo from "../assets/images/shyam_express_logo_1783665032905.jpg";
+import { IMAGES } from "../utils/imageConfig";
+
+const khatuShyamHero = IMAGES.khatuShyamHero;
+const sumedhMudgalkar = IMAGES.sumedhMudgalkar;
+const divyaDutta = IMAGES.divyaDutta;
+const profShyam = IMAGES.profShyam;
+const hemantMentoring = IMAGES.hemantMentoring;
+const hemantNilimDas = IMAGES.hemantNilimDas;
+const prajaktaMali = IMAGES.prajaktaMali;
+const shyamExpressLogo = IMAGES.shyamExpressLogo;
 
 // Constants
 export const x = {
@@ -212,11 +207,17 @@ export function TitleSlide({
       <div className="relative z-10 w-full max-w-[1280px] mx-auto px-6 md:px-12 flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden pt-4 pb-24 md:py-10">
         
         {/* Top Header - Branding */}
-        <div className="flex items-center justify-between w-full border-b border-white/10 pb-3">
-          <div className="flex flex-col items-start gap-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full border-b border-white/10 pb-4 gap-3">
+          <div className="flex flex-col items-start">
             <SectionBadge>PROZENIUS Presents</SectionBadge>
+            <div className="mt-1.5 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#FFD978] animate-pulse shrink-0" />
+              <h1 className="text-[14px] sm:text-[17px] tracking-[0.24em] text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] via-[#FFD978] to-[#B8860B] uppercase font-serif font-extrabold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                A FILM CREATED BY HEMANT NILIM DAS
+              </h1>
+            </div>
           </div>
-          <div className="text-[11px] tracking-widest text-[#FFD978] font-mono bg-black/40 px-3 py-1 rounded-full border border-white/5 font-semibold">
+          <div className="text-[11px] tracking-widest text-[#FFD978] font-mono bg-black/50 px-3 py-1.5 rounded-full border border-white/10 font-bold self-start sm:self-auto shadow-md">
             OFFICIAL FILM PROPOSAL
           </div>
         </div>
@@ -1071,21 +1072,40 @@ export function COPSlide({ images, onUploadImage, onResetImage }: SlideProps) {
             </h2>
             
             <div className="mt-4 overflow-hidden rounded-xl border border-black/10 bg-white">
-              <div className="grid grid-cols-[1.4fr_0.5fr_1.1fr] px-4 py-2.5 bg-[#FFF2CC] text-[10px] tracking-widest uppercase text-black/50 border-b border-black/10 font-bold font-mono">
+              {/* Header: hidden on mobile, shown on desktop */}
+              <div className="hidden sm:grid sm:grid-cols-[1.4fr_0.5fr_1.1fr] px-4 py-2.5 bg-[#FFF2CC] text-[10px] tracking-widest uppercase text-black/50 border-b border-black/10 font-bold font-mono">
                 <span>Budget Head / Department</span>
                 <span>Share</span>
                 <span className="text-right">Investment Scale / Scope</span>
               </div>
               
-              <div className="divide-y divide-black/5 max-h-[220px] overflow-y-auto">
+              <div className="divide-y divide-black/5 max-h-[260px] overflow-y-auto">
                 {breakdown.map((b) => (
-                  <div key={b.l} className="grid grid-cols-[1.4fr_0.5fr_1.1fr] px-4 py-2 items-center hover:bg-[#FFF8E7] transition text-[11.5px] text-black/80 font-sans">
-                    <span className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: b.c }} />
-                      <span className="font-medium truncate">{b.l}</span>
-                    </span>
-                    <span className="font-mono text-black/55">{b.v}%</span>
-                    <span className="font-semibold text-right font-mono text-black/90">{b.amt}</span>
+                  <div key={b.l} className="px-4 py-3 sm:py-2 hover:bg-[#FFF8E7] transition text-[11.5px] text-black/80 font-sans">
+                    {/* Mobile: stacked format */}
+                    <div className="flex sm:hidden flex-col gap-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="flex items-center gap-1.5 font-semibold text-black/90 min-w-0">
+                          <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ background: b.c }} />
+                          <span>{b.l}</span>
+                        </span>
+                        <span className="font-mono text-[#4A0A0A] font-bold shrink-0 text-xs">{b.v}%</span>
+                      </div>
+                      <div className="pl-3.5 text-[10px] font-mono text-black/50 flex justify-between items-center">
+                        <span>Scope:</span>
+                        <span className="font-semibold text-black/80">{b.amt}</span>
+                      </div>
+                    </div>
+
+                    {/* Desktop: multi-column grid format */}
+                    <div className="hidden sm:grid sm:grid-cols-[1.4fr_0.5fr_1.1fr] items-center w-full">
+                      <span className="flex items-center gap-2 min-w-0">
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: b.c }} />
+                        <span className="font-medium truncate">{b.l}</span>
+                      </span>
+                      <span className="font-mono text-black/55">{b.v}%</span>
+                      <span className="font-semibold text-right font-mono text-black/90">{b.amt}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1202,7 +1222,7 @@ export function RecoverySlide({ images, onUploadImage, onResetImage }: SlideProp
               <div className="text-[10px] tracking-[0.18em] uppercase text-[#B8860B] font-bold">
                 Recovery Channels • 6 Windows
               </div>
-              <div className="mt-3.5 grid grid-cols-2 gap-3 text-[12px] font-mono">
+              <div className="mt-3.5 grid grid-cols-1 sm:grid-cols-2 gap-3 text-[12px] font-mono">
                 {[
                   { k: "Theatrical Belt First", v: "40% • Rs 1 Cr MG" },
                   { k: "OTT Hindi Platforms", v: "Hotstar / Prime • 35%" },
@@ -1374,12 +1394,12 @@ export function NextStepsSlide({ onCTAClick, images, onUploadImage, onResetImage
             </div>
           </div>
 
-          {/* PROZENIUS Contact Card */}
+          {/* Excellency Contact Card */}
           <div className="p-4 rounded-xl bg-white border shadow-sm flex flex-col justify-between" style={{ borderColor: `${x.gold}22` }}>
             <div className="flex items-center justify-between">
               <div>
                 <div className="serif text-[17px] font-bold text-[#4A0A0A] leading-tight">
-                  PROZENIUS
+                  Excellency
                 </div>
                 <div className="text-[11px] text-black/55 font-mono">
                   www.prozenius.com • Mumbai
@@ -1389,17 +1409,17 @@ export function NextStepsSlide({ onCTAClick, images, onUploadImage, onResetImage
                 className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-[12px] border"
                 style={{ borderColor: x.gold, color: x.gold, background: "rgba(184,134,11,0.08)" }}
               >
-                PZ
+                EX
               </div>
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2 text-[10px] font-mono">
-              <div className="px-2 py-1.5 rounded-lg bg-[#FFF8E7] border border-black/5 text-black/60 truncate text-center">
-                Produced by Mr. Ravinder
+              <div className="px-2 py-1.5 rounded-lg bg-[#FFF8E7] border border-black/5 text-black/60 truncate text-center flex items-center justify-center font-semibold">
+                connect Ravinder Kumar ji
               </div>
-              <div className="px-2 py-1.5 rounded-lg bg-[#FFF8E7] border border-black/5 text-black/60 truncate text-center flex items-center justify-center gap-1">
-                <Mail className="w-3 h-3 text-[#B8860B]" />
-                contact@prozenius.com
+              <div className="px-2 py-1.5 rounded-lg bg-[#FFF8E7] border border-black/5 text-black/60 truncate text-center flex items-center justify-center gap-1 font-semibold">
+                <Phone className="w-3 h-3 text-[#B8860B]" />
+                Contact: 9004221717
               </div>
             </div>
 
@@ -1457,7 +1477,7 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
           Writer, Director & CEO, Prozenius Media
         </p>
 
-        <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-6 items-start flex-1 max-h-full overflow-hidden">
+        <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-6 items-start w-full md:flex-1 md:max-h-full md:overflow-hidden">
           {/* Left Column: Creator Photo */}
           <div className="flex flex-col gap-3 w-full max-w-[300px] mx-auto">
             <SlideImageZone
@@ -1479,8 +1499,8 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
             </div>
           </div>
 
-          {/* Right Column: Full content with smooth scrolling */}
-          <div className="flex flex-col justify-between h-full max-h-[500px] overflow-y-auto pr-3 custom-scrollbar">
+          {/* Right Column: Full content with smooth scrolling on desktop, auto height on mobile */}
+          <div className="flex flex-col justify-between w-full md:h-full md:max-h-[500px] md:overflow-y-auto md:pr-3 md:custom-scrollbar">
             <div className="space-y-4 text-[12.5px] text-white/80 leading-relaxed font-sans">
               
               <div className="p-4 rounded-xl border border-white/10 bg-white/[0.02]">

@@ -43,8 +43,9 @@ import { CinematicOrchestraSynth, SecureAudioPlayer } from "./utils/secureAudio"
 import filmTrack1Url from "./assets/audio/film_track_1.mp3";
 // @ts-ignore
 const filmTrack2Url = filmTrack1Url;
-// @ts-ignore
-import fallbackHero from "./assets/images/khatu_shyam_hero_1783612474905.jpg";
+
+import { IMAGES } from "./utils/imageConfig";
+const fallbackHero = IMAGES.khatuShyamHero;
 
 const TOTAL_SLIDES = 11;
 const SLIDE_NAMES = [
