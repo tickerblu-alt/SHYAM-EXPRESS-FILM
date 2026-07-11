@@ -55,7 +55,7 @@ export class CinematicOrchestraSynth {
         this.transitionToChord(this.chords[this.currentChordIndex]);
       }, 8000);
     } catch (e) {
-      console.error("Failed to start synthesizer context:", e);
+      console.warn("Failed to start synthesizer context:", e);
     }
   }
 
@@ -106,7 +106,7 @@ export class CinematicOrchestraSynth {
         this.activeNodes.push({ osc, gain: oscGain });
       });
     } catch (e) {
-      console.error("Synthesizer playback error:", e);
+      console.warn("Synthesizer playback error:", e);
     }
   }
 
@@ -189,42 +189,148 @@ export class SecureAudioPlayer {
   private onTimeUpdate: ((current: number, duration: number) => void) | null = null;
   private intervalId: any = null;
 
+  // Resilient HTML5 streaming fallback properties
+  private useFallbackAudio: boolean = false;
+  private fallbackAudio: HTMLAudioElement | null = null;
+
   constructor() {}
 
-  async loadSong(base64: string, onProgress?: (msg: string) => void): Promise<void> {
+  async decodeAudio(ctx: AudioContext, arrayBuffer: ArrayBuffer): Promise<AudioBuffer> {
+    return new Promise((resolve, reject) => {
+      try {
+        const promise = ctx.decodeAudioData(
+          arrayBuffer,
+          (buffer) => resolve(buffer),
+          (err) => reject(err || new Error("decodeAudioData callback error"))
+        );
+        // If it's a standard Promise, handle resolution
+        if (promise && typeof (promise as any).then === "function") {
+          (promise as any).then(resolve).catch(reject);
+        }
+      } catch (e) {
+        // Fallback for environment constraints where decodeAudioData is only callback-based or throws on Promise call
+        try {
+          ctx.decodeAudioData(
+            arrayBuffer,
+            (buffer) => resolve(buffer),
+            (err) => reject(err || new Error("decodeAudioData fallback callback error"))
+          );
+        } catch (innerErr) {
+          reject(innerErr);
+        }
+      }
+    });
+  }
+
+  async loadSong(urlOrBase64: string, onProgress?: (msg: string) => void): Promise<void> {
     this.stop();
-    this.currentBase64 = base64;
+    this.currentBase64 = urlOrBase64;
+    this.useFallbackAudio = false;
 
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-    if (!this.ctx) {
-      this.ctx = new AudioContextClass();
-    }
-
-    // Force context resume if suspended
-    if (this.ctx.state === "suspended") {
-      await this.ctx.resume();
-    }
-
-    if (onProgress) onProgress("Parsing secure track binary...");
-    const arrayBuffer = base64ToArrayBuffer(base64);
-
-    if (onProgress) onProgress("Decoding high-fidelity stream...");
+    // Try standard Web Audio decoding first
     try {
-      this.audioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!this.ctx) {
+        this.ctx = new AudioContextClass();
+      }
+
+      // Force context resume if suspended
+      if (this.ctx.state === "suspended") {
+        await this.ctx.resume();
+      }
+
+      let arrayBuffer: ArrayBuffer;
+      if (urlOrBase64.startsWith("data:") || urlOrBase64.length > 2000) {
+        if (onProgress) onProgress("Parsing secure track binary...");
+        arrayBuffer = base64ToArrayBuffer(urlOrBase64);
+      } else {
+        if (onProgress) onProgress("Fetching high-fidelity stream...");
+        const response = await fetch(urlOrBase64);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch audio stream: HTTP status ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("text/html")) {
+          throw new Error("Failed to fetch audio: Received HTML instead of audio binary file.");
+        }
+        arrayBuffer = await response.arrayBuffer();
+      }
+
+      if (onProgress) onProgress("Decoding high-fidelity stream...");
+      this.audioBuffer = await this.decodeAudio(this.ctx, arrayBuffer);
       this.pauseTime = 0;
       this.isPlaying = false;
       if (onProgress) onProgress("Decoded");
     } catch (err) {
-      if (onProgress) onProgress("Decoding failed. Unsupported audio format.");
-      throw err;
+      console.warn("Web Audio decoding failed, switching to resilient HTML5 streamer:", err);
+      if (onProgress) onProgress("Initializing resilient streaming engine...");
+
+      try {
+        if (this.fallbackAudio) {
+          this.fallbackAudio.pause();
+          this.fallbackAudio = null;
+        }
+
+        this.fallbackAudio = new Audio(urlOrBase64);
+        this.fallbackAudio.loop = true;
+
+        // Preload and verify source
+        await new Promise<void>((resolve, reject) => {
+          if (!this.fallbackAudio) return reject(new Error("No audio element"));
+
+          const onLoadedMetadata = () => {
+            cleanup();
+            resolve();
+          };
+
+          const onError = () => {
+            cleanup();
+            reject(this.fallbackAudio?.error || new Error("Failed to load audio source"));
+          };
+
+          const cleanup = () => {
+            this.fallbackAudio?.removeEventListener("loadedmetadata", onLoadedMetadata);
+            this.fallbackAudio?.removeEventListener("error", onError);
+          };
+
+          this.fallbackAudio.addEventListener("loadedmetadata", onLoadedMetadata);
+          this.fallbackAudio.addEventListener("error", onError);
+
+          this.fallbackAudio.load();
+
+          // Resilient timeout
+          setTimeout(() => {
+            cleanup();
+            resolve();
+          }, 4000);
+        });
+
+        this.useFallbackAudio = true;
+        this.pauseTime = 0;
+        this.isPlaying = false;
+        if (onProgress) onProgress("Ready (Resilient stream)");
+      } catch (fallbackErr) {
+        if (onProgress) onProgress("Resilient stream initialization failed.");
+        throw fallbackErr;
+      }
     }
   }
 
   play(volume: number, onTimeUpdate: (current: number, duration: number) => void) {
+    this.onTimeUpdate = onTimeUpdate;
+    this.isPlaying = true;
+
+    if (this.useFallbackAudio && this.fallbackAudio) {
+      this.fallbackAudio.volume = volume;
+      this.fallbackAudio.play().catch(err => {
+        console.warn("HTML5 audio playback interaction failed:", err);
+      });
+      this.startTracking();
+      return;
+    }
+
     if (!this.ctx || !this.audioBuffer) return;
     this.stopSource();
-
-    this.onTimeUpdate = onTimeUpdate;
 
     this.sourceNode = this.ctx.createBufferSource();
     this.sourceNode.buffer = this.audioBuffer;
@@ -239,7 +345,6 @@ export class SecureAudioPlayer {
     const offset = this.pauseTime % this.audioBuffer.duration;
     this.sourceNode.start(0, offset);
     this.startTime = this.ctx.currentTime - offset;
-    this.isPlaying = true;
 
     this.startTracking();
   }
@@ -247,9 +352,15 @@ export class SecureAudioPlayer {
   private startTracking() {
     if (this.intervalId) clearInterval(this.intervalId);
     this.intervalId = setInterval(() => {
-      if (this.isPlaying && this.ctx && this.audioBuffer && this.onTimeUpdate) {
-        const elapsed = this.ctx.currentTime - this.startTime;
-        this.onTimeUpdate(elapsed % this.audioBuffer.duration, this.audioBuffer.duration);
+      if (this.isPlaying && this.onTimeUpdate) {
+        if (this.useFallbackAudio && this.fallbackAudio) {
+          const elapsed = this.fallbackAudio.currentTime;
+          const duration = this.fallbackAudio.duration || 0;
+          this.onTimeUpdate(elapsed, duration);
+        } else if (this.ctx && this.audioBuffer) {
+          const elapsed = this.ctx.currentTime - this.startTime;
+          this.onTimeUpdate(elapsed % this.audioBuffer.duration, this.audioBuffer.duration);
+        }
       }
     }, 250);
   }
@@ -262,18 +373,32 @@ export class SecureAudioPlayer {
   }
 
   pause() {
-    if (!this.isPlaying || !this.ctx) return;
-    this.pauseTime = this.ctx.currentTime - this.startTime;
-    this.stopSource();
+    if (!this.isPlaying) return;
     this.isPlaying = false;
     this.stopTracking();
+
+    if (this.useFallbackAudio && this.fallbackAudio) {
+      this.fallbackAudio.pause();
+      return;
+    }
+
+    if (this.ctx) {
+      this.pauseTime = this.ctx.currentTime - this.startTime;
+    }
+    this.stopSource();
   }
 
   stop() {
     this.pauseTime = 0;
-    this.stopSource();
     this.isPlaying = false;
     this.stopTracking();
+
+    if (this.fallbackAudio) {
+      this.fallbackAudio.pause();
+      this.fallbackAudio.currentTime = 0;
+    }
+
+    this.stopSource();
     this.audioBuffer = null;
     this.currentBase64 = null;
   }
@@ -295,6 +420,9 @@ export class SecureAudioPlayer {
   }
 
   setVolume(vol: number) {
+    if (this.useFallbackAudio && this.fallbackAudio) {
+      this.fallbackAudio.volume = vol;
+    }
     if (this.gainNode && this.ctx) {
       this.gainNode.gain.setValueAtTime(vol, this.ctx.currentTime);
     }

@@ -33,12 +33,20 @@ import {
   COPSlide,
   RecoverySlide,
   NextStepsSlide,
+  ProductionFramesSlide,
   x
 } from "./components/Slides";
 import { getImages, saveImage, deleteImage, UploadedImage } from "./utils/db";
 import { CinematicOrchestraSynth, SecureAudioPlayer } from "./utils/secureAudio";
 
-const TOTAL_SLIDES = 10;
+// @ts-ignore
+import filmTrack1Url from "./assets/audio/film_track_1.mp3";
+// @ts-ignore
+const filmTrack2Url = filmTrack1Url;
+// @ts-ignore
+import fallbackHero from "./assets/images/khatu_shyam_hero_1783612474905.jpg";
+
+const TOTAL_SLIDES = 11;
 const SLIDE_NAMES = [
   "Pitch Deck Title",
   "One-Line Vision",
@@ -49,7 +57,8 @@ const SLIDE_NAMES = [
   "About the Creator",
   "Budget Model",
   "Recovery Plan",
-  "Investment Steps"
+  "Investment Steps",
+  "Production Frames"
 ];
 
 export default function App() {
@@ -64,49 +73,20 @@ export default function App() {
   const [audioState, setAudioState] = useState<"off" | "synth" | "song1" | "song2">("off");
   const [volume, setVolume] = useState<number>(0.5);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [song1Name, setSong1Name] = useState<string | null>(null);
-  const [song2Name, setSong2Name] = useState<string | null>(null);
-  const [song1Base64, setSong1Base64] = useState<string | null>(null);
-  const [song2Base64, setSong2Base64] = useState<string | null>(null);
+  const [song1Name, setSong1Name] = useState<string | null>("Film Track 1 (Vocal Theme)");
+  const [song2Name, setSong2Name] = useState<string | null>("Film Track 2 (Background Score)");
+  const [song1Base64, setSong1Base64] = useState<string | null>(filmTrack1Url);
+  const [song2Base64, setSong2Base64] = useState<string | null>(filmTrack2Url);
   const [isDecoding, setIsDecoding] = useState<boolean>(false);
   const [decodingMsg, setDecodingMsg] = useState<string | null>(null);
   const [showAudioPanel, setShowAudioPanel] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
-
-  // 30 seconds auto-shift timer for Cinematic Theme
-  const [synthPlayTime, setSynthPlayTime] = useState<number>(0);
   const [audioNotification, setAudioNotification] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isPlaying || audioState !== "synth") {
-      setSynthPlayTime(0);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setSynthPlayTime((prev) => {
-        const next = prev + 1;
-        if (next >= 30) {
-          setAudioState("song1");
-          setAudioNotification(
-            "Cinematic Theme completed 30 seconds of play. Audio has auto-shifted to Film Track 1! To turn off the music or shift tracks manually, click the green 'Audio ON' button at the top-right of your screen to open the music controls. From there, you can toggle play/pause, select tracks, or change volume."
-          );
-          clearInterval(interval);
-          return 0;
-        }
-        return next;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, audioState]);
 
   // Audio utility references
   const synthRef = useRef<CinematicOrchestraSynth | null>(null);
   const playerRef = useRef<SecureAudioPlayer | null>(null);
-  const song1InputRef = useRef<HTMLInputElement>(null);
-  const song2InputRef = useRef<HTMLInputElement>(null);
 
   // Synchronize fullscreen state with browser events (e.g. Esc key)
   useEffect(() => {
@@ -136,37 +116,51 @@ export default function App() {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [slideImages, setSlideImages] = useState<Record<string, string>>({});
+  
+  // Custom Movie Frames states
+  const [movieFrames, setMovieFrames] = useState<Record<string, string>>({});
 
   // Load images and audio files from database on mount
   useEffect(() => {
     getImages()
       .then((imgs) => {
-        // Filter out audio files from the slide visual library
-        setUploadedImages(imgs.filter(img => img.id !== "secure_song_1" && img.id !== "secure_song_2"));
+        // Filter out audio files, tracks, and frames from the slide visual library
+        setUploadedImages(imgs.filter(img => 
+          img.id !== "secure_song_1" && 
+          img.id !== "secure_song_2" &&
+          !img.id.startsWith("movie_track_") &&
+          !img.id.startsWith("movie_frame_")
+        ));
         
-        // Populate slide key-value images & loaded audio files
+        // Populate slide key-value images
         const dict: Record<string, string> = {};
+        const framesDict: Record<string, string> = {};
+
         imgs.forEach(img => {
           if (img.id.startsWith("slide_")) {
             dict[img.id] = img.dataUrl;
-          } else if (img.id === "secure_song_1") {
-            setSong1Name(img.name);
-            setSong1Base64(img.dataUrl);
-          } else if (img.id === "secure_song_2") {
-            setSong2Name(img.name);
-            setSong2Base64(img.dataUrl);
+          } else if (img.id.startsWith("movie_frame_")) {
+            framesDict[img.id] = img.dataUrl;
           }
         });
+        
         setSlideImages(dict);
+        setMovieFrames(framesDict);
 
-        // Find main non-slot images (excluding secure song data)
-        const mainImgs = imgs.filter(img => !img.id.startsWith("slide_") && img.id !== "secure_song_1" && img.id !== "secure_song_2");
+        // Find main non-slot images (excluding secure song, track, and frame data)
+        const mainImgs = imgs.filter(img => 
+          !img.id.startsWith("slide_") && 
+          img.id !== "secure_song_1" && 
+          img.id !== "secure_song_2" &&
+          !img.id.startsWith("movie_track_") &&
+          !img.id.startsWith("movie_frame_")
+        );
         if (mainImgs.length > 0) {
           setSelectedImageId(mainImgs[0].id);
         }
       })
       .catch((err) => {
-        console.error("IndexedDB load error:", err);
+        console.warn("IndexedDB load error:", err);
       });
   }, []);
 
@@ -192,7 +186,7 @@ export default function App() {
       setSelectedImageId(newImg.id);
       showToast("Visual uploaded and saved persistently!");
     } catch (err) {
-      console.error("Failed to save image to IndexedDB:", err);
+      console.warn("Failed to save image to IndexedDB:", err);
       showToast("Failed to store image on device");
     }
   };
@@ -206,7 +200,7 @@ export default function App() {
       }
       showToast("Visual deleted from device");
     } catch (err) {
-      console.error("Failed to delete image:", err);
+      console.warn("Failed to delete image:", err);
       showToast("Failed to delete image");
     }
   };
@@ -223,7 +217,7 @@ export default function App() {
       setSlideImages(prev => ({ ...prev, [slotId]: dataUrl }));
       showToast("Custom slide visual saved persistently!");
     } catch (err) {
-      console.error("Failed to save slot image:", err);
+      console.warn("Failed to save slot image:", err);
       showToast("Failed to store visual on device");
     }
   };
@@ -238,7 +232,39 @@ export default function App() {
       });
       showToast("Visual reset to default");
     } catch (err) {
-      console.error("Failed to delete slot image:", err);
+      console.warn("Failed to delete slot image:", err);
+    }
+  };
+
+  const handleUploadMovieFrame = async (id: string, dataUrl: string, name: string) => {
+    const frameItem: UploadedImage = {
+      id,
+      name,
+      dataUrl,
+      timestamp: Date.now()
+    };
+    try {
+      await saveImage(frameItem);
+      setMovieFrames(prev => ({ ...prev, [id]: dataUrl }));
+      showToast("Cinematic frame slot saved persistently!");
+    } catch (err) {
+      console.warn("Failed to save frame:", err);
+      showToast("Failed to store frame on device");
+    }
+  };
+
+  const handleDeleteMovieFrame = async (id: string) => {
+    try {
+      await deleteImage(id);
+      setMovieFrames(prev => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      showToast("Cinematic frame slot cleared");
+    } catch (err) {
+      console.warn("Failed to delete frame:", err);
+      showToast("Failed to delete frame");
     }
   };
 
@@ -285,7 +311,7 @@ export default function App() {
                 if (active) setDecodingMsg(msg);
               });
             } catch (err) {
-              console.error(err);
+              console.warn("Song 1 decoding failed:", err);
               if (active) {
                 showToast("Decoding failed. Fallback to Synth.");
                 setAudioState("synth");
@@ -321,7 +347,7 @@ export default function App() {
                 if (active) setDecodingMsg(msg);
               });
             } catch (err) {
-              console.error(err);
+              console.warn("Song 2 decoding failed:", err);
               if (active) {
                 showToast("Decoding failed. Fallback to Synth.");
                 setAudioState("synth");
@@ -364,70 +390,6 @@ export default function App() {
     };
   }, []);
 
-  const handleAudioUpload = (slot: 1 | 2, e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-    
-    // Check if valid audio file
-    if (!file.type.startsWith("audio/")) {
-      showToast("Error: Only valid audio files (MP3/WAV/OGG) can be loaded.");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      if (event.target?.result && typeof event.target.result === "string") {
-        const id = slot === 1 ? "secure_song_1" : "secure_song_2";
-        const newAudioItem = {
-          id,
-          name: file.name,
-          dataUrl: event.target.result,
-          timestamp: Date.now()
-        };
-
-        try {
-          await saveImage(newAudioItem);
-          if (slot === 1) {
-            setSong1Name(file.name);
-            setSong1Base64(event.target.result);
-            setAudioState("song1");
-          } else {
-            setSong2Name(file.name);
-            setSong2Base64(event.target.result);
-            setAudioState("song2");
-          }
-          setIsPlaying(true);
-          showToast(`Success: Track ${slot} uploaded securely!`);
-        } catch (err) {
-          console.error("Audio save failure:", err);
-          showToast("Security storage failed.");
-        }
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleAudioDelete = async (slot: 1 | 2) => {
-    const id = slot === 1 ? "secure_song_1" : "secure_song_2";
-    try {
-      await deleteImage(id);
-      if (slot === 1) {
-        setSong1Name(null);
-        setSong1Base64(null);
-        if (audioState === "song1") setAudioState("synth");
-      } else {
-        setSong2Name(null);
-        setSong2Base64(null);
-        if (audioState === "song2") setAudioState("synth");
-      }
-      showToast(`Track ${slot} removed securely.`);
-    } catch (err) {
-      console.error("Audio delete error:", err);
-      showToast("Failed to remove track.");
-    }
-  };
-
-  const fallbackHero = "/src/assets/images/khatu_shyam_hero_1783612474905.jpg";
   const activeImage = selectedImageId 
     ? (uploadedImages.find(img => img.id === selectedImageId)?.dataUrl || fallbackHero)
     : fallbackHero;
@@ -466,11 +428,11 @@ export default function App() {
   }, [currentSlide, isAutoplay]);
 
   const handleCTA = () => {
-    showToast("Excellency Studios • Team will contact you shortly!");
+    showToast("PROZENIUS • Team will contact you shortly!");
     try {
-      navigator.clipboard.writeText("Excellency Studios - contact@excellencystudios.com - HAAR NAHI, HAAZIR");
+      navigator.clipboard.writeText("PROZENIUS - contact@prozenius.com - HAAR NAHI, HAAZIR");
     } catch (err) {
-      console.error("Clipboard copy failed", err);
+      console.warn("Clipboard copy failed", err);
     }
   };
 
@@ -479,7 +441,7 @@ export default function App() {
       navigator.clipboard.writeText(window.location.href);
       showToast("Presentation link copied to clipboard!");
     } catch (err) {
-      showToast("Excellency Studios: contact@excellencystudios.com");
+      showToast("PROZENIUS: contact@prozenius.com");
     }
   };
 
@@ -522,6 +484,14 @@ export default function App() {
         return <RecoverySlide {...commonProps} />;
       case 9:
         return <NextStepsSlide onCTAClick={handleCTA} {...commonProps} />;
+      case 10:
+        return (
+          <ProductionFramesSlide
+            frames={movieFrames}
+            onUploadFrame={handleUploadMovieFrame}
+            onDeleteFrame={handleDeleteMovieFrame}
+          />
+        );
       default:
         return (
           <TitleSlide
@@ -569,7 +539,7 @@ export default function App() {
           </div>
           <div className="hidden md:block h-4 w-px bg-white/15" />
           <div className="hidden md:block text-[9px] tracking-[0.18em] text-white/40 uppercase font-semibold">
-            INVESTOR ROADMAP • EXCELLENCY STUDIOS
+            INVESTOR ROADMAP • PROZENIUS
           </div>
         </div>
 
@@ -597,302 +567,7 @@ export default function App() {
             )}
           </button>
 
-          {/* SECURE BACKGROUND AUDIO TRIGGER */}
-          <div className="relative">
-            <button
-              onClick={() => setShowAudioPanel(!showAudioPanel)}
-              className={`px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-wider transition-all flex items-center gap-1.5 cursor-pointer ${
-                isPlaying && audioState !== "off"
-                  ? "bg-emerald-600 text-white hover:bg-emerald-500 border border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                  : "bg-white/10 text-white/80 hover:bg-white/20 border border-white/5"
-              }`}
-              title="Secure Background Audio System"
-            >
-              {isPlaying && audioState !== "off" ? (
-                <>
-                  <Disc className="w-3.5 h-3.5 animate-spin shrink-0 text-emerald-100" />
-                  <span>Audio ON</span>
-                </>
-              ) : (
-                <>
-                  <Music className="w-3.5 h-3.5 shrink-0" />
-                  <span>Audio OFF</span>
-                </>
-              )}
-            </button>
 
-            {/* FLOATING SECURE AUDIO CONTROL PANEL */}
-            {showAudioPanel && (
-              <div 
-                className="absolute right-0 mt-3 w-[330px] sm:w-[360px] bg-[#121212]/95 border border-[#B8860B]/40 rounded-2xl shadow-[0_10px_35px_rgba(0,0,0,0.85)] p-5 z-50 text-white backdrop-blur-xl animate-in fade-in slide-in-from-top-3 duration-200"
-                onContextMenu={(e) => e.preventDefault()} // Block right-click context menu on UI to prevent saving or inspecting player
-              >
-                {/* Header branding */}
-                <div className="flex items-center justify-between border-b border-white/10 pb-2.5 mb-4">
-                  <div>
-                    <div className="text-[11px] uppercase tracking-[0.2em] text-[#FFD978] font-bold">
-                      EXCELLENCY STUDIOS MUSIC
-                    </div>
-                    <div className="text-[8.5px] uppercase tracking-wider text-emerald-400 font-mono flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      <span>ANTI-PIRACY DECRYPTOR ACTIVE</span>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setShowAudioPanel(false)}
-                    className="text-[10px] text-white/40 hover:text-white uppercase tracking-wider font-bold"
-                  >
-                    Close
-                  </button>
-                </div>
-
-                {/* Main Playback Toggle & Volume */}
-                <div className="bg-white/[0.03] border border-white/5 rounded-xl p-3 mb-4 flex items-center justify-between">
-                  <button
-                    onClick={() => {
-                      if (audioState === "off") {
-                        setAudioState("synth");
-                      }
-                      setIsPlaying(!isPlaying);
-                    }}
-                    className={`px-4 py-2 rounded-lg text-[10px] uppercase font-bold tracking-widest flex items-center gap-1.5 transition-all ${
-                      isPlaying && audioState !== "off"
-                        ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                        : "bg-white/10 text-white/80 hover:bg-white/20"
-                    }`}
-                  >
-                    {isPlaying && audioState !== "off" ? (
-                      <>
-                        <Pause className="w-3.5 h-3.5 text-white" />
-                        <span>Mute Audio</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-3.5 h-3.5 text-white" />
-                        <span>Activate Audio</span>
-                      </>
-                    )}
-                  </button>
-
-                  <div className="flex items-center gap-2 flex-1 ml-4 justify-end">
-                    {volume === 0 ? (
-                      <VolumeX className="w-4 h-4 text-white/40" />
-                    ) : (
-                      <Volume2 className="w-4 h-4 text-white/60" />
-                    )}
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={volume}
-                      onChange={(e) => setVolume(parseFloat(e.target.value))}
-                      className="w-24 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-[#FFD978]"
-                      title={`Volume: ${Math.round(volume * 100)}%`}
-                    />
-                  </div>
-                </div>
-
-                {/* Decoding state spinner overlay */}
-                {isDecoding && (
-                  <div className="py-2 px-3 mb-3 bg-indigo-950/40 border border-indigo-500/20 rounded-xl text-[10px] text-indigo-200 font-mono flex items-center gap-2">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
-                    <span>{decodingMsg || "Decoding high-fidelity stream..."}</span>
-                  </div>
-                )}
-
-                {/* Track selection cards */}
-                <div className="space-y-2.5">
-                  <div className="text-[8px] uppercase tracking-widest text-white/40 font-bold font-mono">
-                    Select Soundtrack Source
-                  </div>
-
-                  {/* 1. Orchestral Synth Pad */}
-                  <div 
-                    onClick={() => {
-                      setAudioState("synth");
-                      setIsPlaying(true);
-                    }}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
-                      audioState === "synth" && isPlaying
-                        ? "border-[#B8860B] bg-[#B8860B]/10"
-                        : "border-white/5 bg-white/[0.01] hover:bg-white/[0.04]"
-                    }`}
-                  >
-                    <div>
-                      <div className="text-[11.5px] font-bold text-white">Cinematic Orchestral Theme</div>
-                      <div className="text-[9px] text-[#FFD978] font-mono mt-0.5">Real-time Synthesizer • Infinite Duration</div>
-                    </div>
-                    {audioState === "synth" && isPlaying && (
-                      <div className="flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#FFD978] animate-ping" />
-                        <span className="text-[8px] uppercase tracking-widest font-mono text-[#FFD978] font-bold">LIVE</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 2. Custom Film Song Slot 1 */}
-                  <div 
-                    className={`p-3 rounded-xl border transition-all flex flex-col gap-2 relative ${
-                      audioState === "song1" && isPlaying
-                        ? "border-[#B8860B] bg-[#B8860B]/10"
-                        : "border-white/5 bg-white/[0.01]"
-                    }`}
-                  >
-                    <div 
-                      onClick={() => {
-                        if (song1Base64) {
-                          setAudioState("song1");
-                          setIsPlaying(true);
-                        }
-                      }}
-                      className="flex items-center justify-between w-full cursor-pointer"
-                    >
-                      <div>
-                        <div className="text-[11.5px] font-bold text-white flex items-center gap-1.5">
-                          <span>Film Track 1</span>
-                          <Lock className="w-2.5 h-2.5 text-white/30" title="Anti-Piracy Protected Track" />
-                        </div>
-                        <div className="text-[9.5px] text-white/60 font-medium truncate max-w-[210px] mt-0.5">
-                          {song1Name || "Empty Slot (Upload below)"}
-                        </div>
-                      </div>
-                      
-                      {audioState === "song1" && isPlaying && (
-                        <div className="flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FFD978] animate-ping" />
-                          <span className="text-[8px] uppercase tracking-widest font-mono text-[#FFD978] font-bold">PLAYING</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Controls inside card */}
-                    <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-1">
-                      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => song1InputRef.current?.click()}
-                          className="px-2.5 py-1 rounded bg-[#B8860B]/20 hover:bg-[#B8860B]/35 border border-[#B8860B]/30 text-[#FFD978] text-[8.5px] uppercase font-bold tracking-wider flex items-center gap-1 transition"
-                        >
-                          <Upload className="w-2.5 h-2.5" />
-                          <span>{song1Base64 ? "Change" : "Upload"}</span>
-                        </button>
-
-                        {song1Base64 && (
-                          <button
-                            onClick={() => handleAudioDelete(1)}
-                            className="p-1 rounded bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition"
-                            title="Delete track securely"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-
-                      {song1Base64 && (
-                        <div className="text-[8.5px] font-mono text-white/40">
-                          {Math.floor(currentTime / 60)}:
-                          {String(Math.floor(currentTime % 60)).padStart(2, "0")} /{" "}
-                          {Math.floor(duration / 60)}:
-                          {String(Math.floor(duration % 60)).padStart(2, "0")}
-                        </div>
-                      )}
-                    </div>
-
-                    <input
-                      type="file"
-                      ref={song1InputRef}
-                      onChange={(e) => handleAudioUpload(1, e)}
-                      accept="audio/*"
-                      className="hidden"
-                    />
-                  </div>
-
-                  {/* 3. Custom Film Song Slot 2 */}
-                  <div 
-                    className={`p-3 rounded-xl border transition-all flex flex-col gap-2 relative ${
-                      audioState === "song2" && isPlaying
-                        ? "border-[#B8860B] bg-[#B8860B]/10"
-                        : "border-white/5 bg-white/[0.01]"
-                    }`}
-                  >
-                    <div 
-                      onClick={() => {
-                        if (song2Base64) {
-                          setAudioState("song2");
-                          setIsPlaying(true);
-                        }
-                      }}
-                      className="flex items-center justify-between w-full cursor-pointer"
-                    >
-                      <div>
-                        <div className="text-[11.5px] font-bold text-white flex items-center gap-1.5">
-                          <span>Film Track 2</span>
-                          <Lock className="w-2.5 h-2.5 text-white/30" title="Anti-Piracy Protected Track" />
-                        </div>
-                        <div className="text-[9.5px] text-white/60 font-medium truncate max-w-[210px] mt-0.5">
-                          {song2Name || "Empty Slot (Upload below)"}
-                        </div>
-                      </div>
-                      
-                      {audioState === "song2" && isPlaying && (
-                        <div className="flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#FFD978] animate-ping" />
-                          <span className="text-[8px] uppercase tracking-widest font-mono text-[#FFD978] font-bold">PLAYING</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Controls inside card */}
-                    <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-1">
-                      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => song2InputRef.current?.click()}
-                          className="px-2.5 py-1 rounded bg-[#B8860B]/20 hover:bg-[#B8860B]/35 border border-[#B8860B]/30 text-[#FFD978] text-[8.5px] uppercase font-bold tracking-wider flex items-center gap-1 transition"
-                        >
-                          <Upload className="w-2.5 h-2.5" />
-                          <span>{song2Base64 ? "Change" : "Upload"}</span>
-                        </button>
-
-                        {song2Base64 && (
-                          <button
-                            onClick={() => handleAudioDelete(2)}
-                            className="p-1 rounded bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 transition"
-                            title="Delete track securely"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-
-                      {song2Base64 && (
-                        <div className="text-[8.5px] font-mono text-white/40">
-                          {Math.floor(currentTime / 60)}:
-                          {String(Math.floor(currentTime % 60)).padStart(2, "0")} /{" "}
-                          {Math.floor(duration / 60)}:
-                          {String(Math.floor(duration % 60)).padStart(2, "0")}
-                        </div>
-                      )}
-                    </div>
-
-                    <input
-                      type="file"
-                      ref={song2InputRef}
-                      onChange={(e) => handleAudioUpload(2, e)}
-                      accept="audio/*"
-                      className="hidden"
-                    />
-                  </div>
-                </div>
-
-                {/* Footer security tag */}
-                <div className="mt-4 pt-2.5 border-t border-white/10 text-center flex items-center justify-center gap-1.5 text-[8.5px] text-white/40 font-sans uppercase tracking-wider">
-                  <span className="inline-block w-1 h-1 rounded-full bg-[#B8860B]" />
-                  <span>Direct RAM Buffer Playback • Right Click Inhibited</span>
-                  <span className="inline-block w-1 h-1 rounded-full bg-[#B8860B]" />
-                </div>
-              </div>
-            )}
-          </div>
 
           <button
             onClick={handleShare}
@@ -1046,7 +721,7 @@ export default function App() {
               </div>
 
               {/* Titles */}
-              <span className="text-[10px] tracking-[0.3em] text-[#FFD978] uppercase font-bold">EXCELLENCY STUDIOS</span>
+              <span className="text-[10px] tracking-[0.3em] text-[#FFD978] uppercase font-bold">PROZENIUS</span>
               <h2 className="serif text-[28px] sm:text-[34px] text-white font-extrabold tracking-wider leading-none mt-2 uppercase">
                 shyam express
               </h2>
@@ -1060,17 +735,11 @@ export default function App() {
               <p className="text-[13px] text-white/60 leading-relaxed font-sans max-w-[340px]">
                 Welcome to the official film investor roadmap and cultural showcase proposal.
               </p>
-              <p className="text-[11px] text-white/40 mt-2 font-sans italic">
-                Pressing start will auto-enable the cinematic background audio at 20% volume for an immersive, optimal experience.
-              </p>
 
               {/* Action Button */}
               <button
                 onClick={() => {
                   setShowStartPopup(false);
-                  setVolume(0.20);
-                  setIsPlaying(true);
-                  setAudioState("synth");
                 }}
                 className="mt-8 w-full h-[54px] rounded-full font-bold tracking-[0.16em] uppercase text-[12.5px] shadow-[0_8px_24px_rgba(184,134,11,0.25)] hover:shadow-[0_12px_32px_rgba(184,134,11,0.4)] hover:scale-[1.01] active:scale-[0.99] transition duration-300 flex items-center justify-center gap-2.5 cursor-pointer"
                 style={{ background: `linear-gradient(90deg, ${x.gold}, ${x.goldLight})`, color: "#1A1A1A" }}
@@ -1108,15 +777,6 @@ export default function App() {
                   {audioNotification}
                 </p>
                 <div className="mt-4 flex gap-2.5">
-                  <button
-                    onClick={() => {
-                      setShowAudioPanel(true);
-                      setAudioNotification(null);
-                    }}
-                    className="px-4 py-2 rounded-lg bg-[#B8860B] hover:bg-[#FFD978] text-black text-[10.5px] uppercase font-bold tracking-wider transition cursor-pointer"
-                  >
-                    Open Music Panel
-                  </button>
                   <button
                     onClick={() => setAudioNotification(null)}
                     className="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10.5px] uppercase font-bold tracking-wider transition cursor-pointer"

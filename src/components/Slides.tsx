@@ -25,9 +25,30 @@ import {
   Clapperboard,
   DollarSign,
   Upload,
-  Trash2
+  Trash2,
+  Music,
+  Disc,
+  Volume2,
+  Pause,
+  HardDrive
 } from "lucide-react";
-const khatuShyamHero = "/src/assets/images/khatu_shyam_hero_1783612474905.jpg";
+
+// @ts-ignore
+import khatuShyamHero from "../assets/images/khatu_shyam_hero_1783612474905.jpg";
+// @ts-ignore
+import sumedhMudgalkar from "../assets/images/sumedh_mudgalkar_1783617889941.jpg";
+// @ts-ignore
+import divyaDutta from "../assets/images/divya_dutta_actress_1783617903496.jpg";
+// @ts-ignore
+import profShyam from "../assets/images/prof_shyam_turnaround_1783617863544.jpg";
+// @ts-ignore
+import hemantMentoring from "../assets/images/hemant_mentoring_1783617934923.jpg";
+// @ts-ignore
+import hemantNilimDas from "../assets/images/hemant_nilim_das_1783617875633.jpg";
+// @ts-ignore
+import prajaktaMali from "../assets/images/prajakta_mali_actress_1783617922399.jpg";
+// @ts-ignore
+import shyamExpressLogo from "../assets/images/shyam_express_logo_1783665032905.jpg";
 
 // Constants
 export const x = {
@@ -84,95 +105,31 @@ export function SlideImageZone({
   showCaption = true,
   defaultImage
 }: SlideImageZoneProps) {
-  const [isDragging, setIsDragging] = React.useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
   const currentUrl = (images && images[slotId]) || defaultImage;
-  const hasCustom = images && images[slotId] && !images[slotId].startsWith("/src/assets/");
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const processFile = (file: File) => {
-    if (!file.type.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result && typeof event.target.result === "string") {
-        onUploadImage(slotId, event.target.result, file.name);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      processFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      processFile(e.target.files[0]);
-    }
-  };
 
   return (
     <div
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      onClick={() => fileInputRef.current?.click()}
-      className={`relative group cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300 ${aspectClass} ${
-        isDragging ? "scale-[1.02] border-[#FFD978] shadow-[0_0_20px_rgba(184,134,11,0.5)]" : "border-white/10 hover:border-[#B8860B]/40"
-      } ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-white/10 transition-all duration-300 ${aspectClass} ${className}`}
     >
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-        className="hidden"
-      />
-
       {currentUrl ? (
         <img
           src={currentUrl}
           alt={defaultLabel}
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover transition duration-500 group-hover:scale-102"
+          className="w-full h-full object-cover transition duration-500 hover:scale-102"
         />
       ) : (
         <div className="w-full h-full bg-black/40 flex flex-col items-center justify-center gap-2 p-4 border border-dashed border-white/10 rounded-2xl">
-          <Upload className="w-5 h-5 text-white/30 group-hover:text-[#FFD978] transition" />
-          <div className="text-[10px] uppercase tracking-widest text-white/40 font-bold group-hover:text-white/60 transition text-center">
-            Upload {defaultLabel}
-          </div>
-        </div>
-      )}
-
-      {/* No "Replace Visual" hover overlay above the image */}
-      {!currentUrl && (
-        <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-2 transition duration-200">
-          <div className="w-9 h-9 rounded-full bg-[#B8860B]/20 border border-[#B8860B]/50 flex items-center justify-center">
-            <Upload className="w-4 h-4 text-[#FFD978]" />
-          </div>
-          <div className="text-center px-4">
-            <div className="text-[10px] uppercase tracking-widest text-[#FFD978] font-bold font-sans">Upload Visual</div>
-            <div className="text-[8px] text-white/60 font-mono mt-0.5">Drag & Drop or Click</div>
+          <Sparkles className="w-5 h-5 text-[#FFD978] animate-pulse" />
+          <div className="text-[10px] uppercase tracking-widest text-white/40 font-bold text-center">
+            {defaultLabel}
           </div>
         </div>
       )}
 
       {/* Caption bar */}
       {showCaption && currentUrl && (
-        <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/75 backdrop-blur-[4px] border border-white/5 rounded-lg p-1.5 flex items-center justify-between transition-opacity group-hover:opacity-0">
+        <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-black/75 backdrop-blur-[4px] border border-white/5 rounded-lg p-1.5 flex items-center justify-between">
           <div className="min-w-0 pr-2">
             <div className="text-[9px] uppercase tracking-widest text-[#FFD978] font-bold truncate">
               {defaultLabel}
@@ -257,7 +214,7 @@ export function TitleSlide({
         {/* Top Header - Branding */}
         <div className="flex items-center justify-between w-full border-b border-white/10 pb-3">
           <div className="flex flex-col items-start gap-1">
-            <SectionBadge>Excellency Studios Presents</SectionBadge>
+            <SectionBadge>PROZENIUS Presents</SectionBadge>
           </div>
           <div className="text-[11px] tracking-widest text-[#FFD978] font-mono bg-black/40 px-3 py-1 rounded-full border border-white/5 font-semibold">
             OFFICIAL FILM PROPOSAL
@@ -269,6 +226,13 @@ export function TitleSlide({
           
           {/* Left Column: Breathtaking Interactive Poster Card */}
           <div className="lg:col-span-5 flex flex-col items-center">
+            {/* Elegant Creator Credit in Golden letters above the poster/production header */}
+            <div className="w-full max-w-[380px] sm:max-w-[420px] text-left mb-2 px-1">
+              <span className="text-[12px] sm:text-[14px] tracking-[0.24em] text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] via-[#FFD978] to-[#B8860B] uppercase font-serif font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                A film Created By HEMANT NILIM DAS
+              </span>
+            </div>
+
             {/* Produced/Presented Header above poster */}
             <div className="mb-4 text-center max-w-[380px] sm:max-w-[420px] w-full bg-black/40 border border-[#B8860B]/20 rounded-xl p-3 shadow-inner">
               <div className="text-[12.5px] tracking-[0.2em] text-[#FFD978] font-bold uppercase">
@@ -280,13 +244,11 @@ export function TitleSlide({
             </div>
 
             <div 
-              onClick={() => posterInputRef.current?.click()}
-              className="relative group/poster w-full max-w-[380px] sm:max-w-[420px] aspect-[3/4] flex flex-col justify-between rounded-[24px] overflow-hidden border cursor-pointer transition-transform duration-500 hover:scale-[1.03] shadow-[0_0_50px_rgba(184,134,11,0.25)] p-6"
+              className="relative group/poster w-full max-w-[380px] sm:max-w-[420px] aspect-[3/4] flex flex-col justify-between rounded-[24px] overflow-hidden border transition-transform duration-500 hover:scale-[1.01] shadow-[0_0_50px_rgba(184,134,11,0.25)] p-6"
               style={{
                 background: "linear-gradient(135deg, rgba(74, 10, 10, 0.96) 0%, rgba(30, 5, 5, 0.99) 100%)",
                 borderColor: `${x.gold}60`
               }}
-              title="Click to Upload Custom Poster Image"
             >
               {/* If user uploaded a custom poster image, display it. Otherwise show our ultra-premium poster replication! */}
               {images?.slide_0_poster ? (
@@ -307,7 +269,7 @@ export function TitleSlide({
                   <div className="relative z-10 flex flex-col justify-between h-full w-full">
                     {/* Poster Top */}
                     <div className="text-center">
-                      <span className="text-[8px] tracking-[0.3em] text-[#FFD978] uppercase font-bold">A FILM BY EXCELLENCY STUDIOS</span>
+                      <span className="text-[8px] tracking-[0.3em] text-[#FFD978] uppercase font-bold">A FILM BY PROZENIUS</span>
                     </div>
 
                     {/* Poster Title & Logo replication */}
@@ -341,74 +303,6 @@ export function TitleSlide({
                     </div>
                   </div>
                 </>
-              )}
-
-              {/* Upload Overlay trigger on hover */}
-              <div className="absolute inset-0 bg-black/75 opacity-0 group-hover/poster:opacity-100 flex flex-col items-center justify-center gap-2 transition duration-300 z-20">
-                <div className="w-10 h-10 rounded-full bg-[#B8860B]/30 border border-[#B8860B] flex items-center justify-center">
-                  <Upload className="w-5 h-5 text-[#FFD978]" />
-                </div>
-                <div className="text-center px-4">
-                  <div className="text-[11px] uppercase tracking-widest text-[#FFD978] font-bold">Upload Custom Poster</div>
-                  <div className="text-[9px] text-white/50 mt-1 font-mono">Drop image or click here</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Poster Upload Inputs */}
-            <input 
-              type="file"
-              ref={posterInputRef}
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  const file = e.target.files[0];
-                  if (!file.type.startsWith("image/")) return;
-                  const reader = new FileReader();
-                  reader.onload = (event) => {
-                    if (event.target?.result && typeof event.target.result === "string") {
-                      onUploadImage("slide_0_poster", event.target.result, file.name);
-                    }
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-              accept="image/*"
-              className="hidden"
-            />
-
-            {/* Upload Buttons */}
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => posterInputRef.current?.click()}
-                className="px-4 py-1.5 rounded-full border text-[8.5px] tracking-widest uppercase font-extrabold flex items-center gap-1.5 transition-all duration-300 bg-black/40 hover:bg-[#B8860B]/30 hover:border-[#FFD978] border-[#B8860B]/40 text-[#FFD978] cursor-pointer shadow-[0_0_15px_rgba(184,134,11,0.2)]"
-              >
-                <Sparkles className="w-3 h-3 text-amber-400 shrink-0 animate-pulse" />
-                <span>Upload Poster</span>
-              </button>
-              
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-1.5 rounded-full border border-white/10 bg-black/40 hover:bg-white/5 hover:border-white/30 text-[8.5px] tracking-widest uppercase font-extrabold flex items-center gap-1.5 transition-all duration-300 cursor-pointer"
-              >
-                <Upload className="w-3 h-3 text-white/60 shrink-0" />
-                <span>Backdrop</span>
-              </button>
-
-              <input 
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="image/*"
-                className="hidden"
-              />
-
-              {images?.slide_0_poster && (
-                <button
-                  onClick={() => onResetImage("slide_0_poster")}
-                  className="px-3.5 py-1.5 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-[8.5px] tracking-widest uppercase font-bold transition-all cursor-pointer"
-                >
-                  Reset
-                </button>
               )}
             </div>
           </div>
@@ -480,7 +374,7 @@ export function TitleSlide({
             "Faith is the courage to stand up one more time when the world declares you finished."
           </div>
           <div className="text-[9px] tracking-wider text-white/30 font-mono uppercase">
-            Produced by Mr. Ravinder • Excellency Studios • Hindi • 108 min • U
+            Produced by Mr. Ravinder • PROZENIUS • Hindi • 108 min • U
           </div>
         </div>
 
@@ -971,28 +865,28 @@ export function CastSlide({ images, onUploadImage, onResetImage }: SlideProps) {
       name: "Sumedh Mudgalkar",
       note: "Raw middle-class struggle, everyday anger mixed with soft vulnerability and divine devotion.",
       icon: <Users className="w-4 h-4" />,
-      defaultImg: "/src/assets/images/sumedh_mudgalkar_1783617889941.jpg"
+      defaultImg: sumedhMudgalkar
     },
     {
       role: "Dadi & Maternal Pillars",
       name: "DIVYA DUTTA / PRAJAKTA MALI",
       note: "Unshakeable cultural anchor, carrying deep faith without any melodrama.",
       icon: <Award className="w-4 h-4 text-amber-500" />,
-      defaultImg: "/src/assets/images/divya_dutta_actress_1783617903496.jpg"
+      defaultImg: divyaDutta
     },
     {
       role: "The Presence",
       name: "Gajraj Rao / Raghubir Yadav",
       note: "Divine voiceover, majestic silhouettes, and high-impact cameo roles.",
       icon: <Sparkles className="w-4 h-4 text-amber-400" />,
-      defaultImg: "/src/assets/images/prof_shyam_turnaround_1783617863544.jpg"
+      defaultImg: profShyam
     },
     {
       role: "The Mentor • 58",
       name: "Rajesh Sharma / Brijendra Kala",
       note: "Skeptical coaching institution owner with a golden heart.",
       icon: <CheckCircle className="w-4 h-4" />,
-      defaultImg: "/src/assets/images/hemant_mentoring_1783617934923.jpg"
+      defaultImg: hemantMentoring
     }
   ];
 
@@ -1480,22 +1374,22 @@ export function NextStepsSlide({ onCTAClick, images, onUploadImage, onResetImage
             </div>
           </div>
 
-          {/* Excellency Studios Contact Card */}
+          {/* PROZENIUS Contact Card */}
           <div className="p-4 rounded-xl bg-white border shadow-sm flex flex-col justify-between" style={{ borderColor: `${x.gold}22` }}>
             <div className="flex items-center justify-between">
               <div>
                 <div className="serif text-[17px] font-bold text-[#4A0A0A] leading-tight">
-                  Excellency Studios
+                  PROZENIUS
                 </div>
                 <div className="text-[11px] text-black/55 font-mono">
-                  www.excellencystudios.com • Mumbai
+                  www.prozenius.com • Mumbai
                 </div>
               </div>
               <div
                 className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-[12px] border"
                 style={{ borderColor: x.gold, color: x.gold, background: "rgba(184,134,11,0.08)" }}
               >
-                ES
+                PZ
               </div>
             </div>
 
@@ -1505,7 +1399,7 @@ export function NextStepsSlide({ onCTAClick, images, onUploadImage, onResetImage
               </div>
               <div className="px-2 py-1.5 rounded-lg bg-[#FFF8E7] border border-black/5 text-black/60 truncate text-center flex items-center justify-center gap-1">
                 <Mail className="w-3 h-3 text-[#B8860B]" />
-                contact@excellencystudios.com
+                contact@prozenius.com
               </div>
             </div>
 
@@ -1573,7 +1467,7 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
               onResetImage={onResetImage}
               aspectClass="aspect-[3/4]"
               defaultLabel="Creator Portrait"
-              defaultImage="/src/assets/images/hemant_mentoring_1783617934923.jpg"
+              defaultImage={hemantMentoring}
             />
             <div className="p-3.5 rounded-xl bg-black/40 border border-white/5">
               <div className="text-[10px] font-mono tracking-wider uppercase text-[#FFD978] font-bold">
@@ -1668,6 +1562,172 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// 11. Production Frames Slide
+interface ProductionFramesSlideProps {
+  frames: Record<string, string>;
+  onUploadFrame: (id: string, dataUrl: string, name: string) => void;
+  onDeleteFrame: (id: string) => void;
+}
+
+const DEFAULT_FRAMES: Record<string, string> = {
+  "movie_frame_1": khatuShyamHero,
+  "movie_frame_2": profShyam,
+  "movie_frame_3": hemantNilimDas,
+  "movie_frame_4": sumedhMudgalkar,
+  "movie_frame_5": divyaDutta,
+  "movie_frame_6": prajaktaMali,
+  "movie_frame_7": hemantMentoring,
+  "movie_frame_8": shyamExpressLogo,
+};
+
+export function ProductionFramesSlide({ frames = {}, onUploadFrame, onDeleteFrame }: ProductionFramesSlideProps) {
+  const [activePreviewUrl, setActivePreviewUrl] = React.useState<string | null>(null);
+
+  const onFileChange = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string;
+      if (dataUrl) {
+        onUploadFrame(id, dataUrl, file.name);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="slide w-full h-full bg-[#1A1A1A] text-[#FFF8E7] relative overflow-hidden flex max-w-[100vw]">
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          background: `radial-gradient(60% 60% at 85% 20%, ${x.maroon} 0%, transparent 70%), radial-gradient(50% 50% at 15% 80%, rgba(184,134,11,0.1) 0%, transparent 60%)`
+        }}
+      />
+      
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-6 flex flex-col justify-center overflow-y-auto max-h-full">
+        <SectionBadge>PRODUCTION END PRODUCT SHOWCASE</SectionBadge>
+        
+        <h1 className="serif mt-1 text-[26px] md:text-[36px] font-extrabold text-[#FFD978] uppercase tracking-wide leading-tight">
+          CINEMATIC MOVIE FRAMES
+        </h1>
+        <p className="text-[12px] text-white/50 font-mono tracking-widest uppercase mt-0.5">
+          how we use 5P SVF to build a world of extremely immersive viewing experience.
+        </p>
+
+        {/* Responsive Grid for 10 frames */}
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-5 gap-3.5 flex-1 max-h-[460px] overflow-y-auto pr-2 custom-scrollbar">
+          {Array.from({ length: 10 }).map((_, idx) => {
+            const num = idx + 1;
+            const id = `movie_frame_${num}`;
+            const isCustom = !!frames[id];
+            const imgUrl = frames[id] || DEFAULT_FRAMES[id];
+
+            return (
+              <div
+                key={id}
+                className={`relative rounded-xl border overflow-hidden aspect-[16/10] transition-all flex flex-col justify-center items-center group ${
+                  imgUrl
+                    ? "border-[#B8860B]/50 hover:border-[#FFD978]"
+                    : "border-white/10 border-dashed bg-black/15 hover:bg-black/30 animate-pulse"
+                }`}
+              >
+                {imgUrl ? (
+                  <>
+                    <img
+                      src={imgUrl}
+                      alt={`Frame ${num}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500 cursor-pointer"
+                      onClick={() => setActivePreviewUrl(imgUrl)}
+                      referrerPolicy="no-referrer"
+                    />
+                    
+                    {/* Hover controls overlay */}
+                    <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-between p-2 border border-[#FFD978]/20 rounded-xl">
+                      <div className="text-[9px] font-mono tracking-wider uppercase text-[#FFD978] font-bold text-center">
+                        {isCustom ? `Custom Frame ${String(num).padStart(2, "0")}` : `Default Frame ${String(num).padStart(2, "0")}`}
+                      </div>
+                      
+                      <div className="flex gap-1.5 justify-center">
+                        <button
+                          onClick={() => setActivePreviewUrl(imgUrl)}
+                          className="px-2 py-0.5 rounded bg-[#B8860B] text-black text-[9px] font-bold uppercase tracking-wider hover:bg-[#FFD978] transition cursor-pointer"
+                        >
+                          View
+                        </button>
+                        
+                        <label className="px-2 py-0.5 rounded bg-white/10 text-white text-[9px] font-bold uppercase tracking-wider hover:bg-white/20 transition cursor-pointer flex items-center justify-center">
+                          <span>Upload</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => onFileChange(id, e)}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {isCustom && (
+                          <button
+                            onClick={() => onDeleteFrame(id)}
+                            className="p-1 rounded bg-red-950 border border-red-500/30 text-red-400 hover:text-white hover:bg-red-600 transition cursor-pointer"
+                            title="Reset to Default"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <label className="absolute inset-0 flex flex-col items-center justify-center p-3 text-center cursor-pointer">
+                    <Camera className="w-5 h-5 text-[#FFD978]/60 group-hover:text-[#FFD978] transition" />
+                    <span className="text-[9.5px] uppercase font-bold tracking-wider text-white/50 mt-1 group-hover:text-white transition">
+                      Frame {String(num).padStart(2, "0")}
+                    </span>
+                    <span className="text-[7.5px] text-white/30 mt-0.5 block">
+                      Click to load
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => onFileChange(id, e)}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Full screen active preview modal */}
+      {activePreviewUrl && (
+        <div
+          className="fixed inset-0 bg-black/98 z-[9999] flex items-center justify-center p-4 cursor-pointer"
+          onClick={() => setActivePreviewUrl(null)}
+        >
+          <div className="relative max-w-[95vw] max-h-[90vh] flex flex-col items-center">
+            <img
+              src={activePreviewUrl}
+              alt="Cinematic Preview"
+              className="max-w-full max-h-full object-contain rounded-lg border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200"
+              referrerPolicy="no-referrer"
+            />
+            <button
+              onClick={() => setActivePreviewUrl(null)}
+              className="mt-4 px-6 py-2 rounded-full bg-[#B8860B] text-black font-bold text-[11px] uppercase tracking-wider hover:bg-[#FFD978] transition"
+            >
+              Close Preview
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
