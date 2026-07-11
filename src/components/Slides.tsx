@@ -209,7 +209,7 @@ export function TitleSlide({
       ))}
 
       {/* Main Content Area - Split Grid Layout */}
-      <div className="relative z-10 w-full max-w-[1280px] mx-auto px-6 md:px-12 flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden py-8 md:py-10">
+      <div className="relative z-10 w-full max-w-[1280px] mx-auto px-6 md:px-12 flex flex-col justify-between h-full overflow-y-auto overflow-x-hidden pt-4 pb-24 md:py-10">
         
         {/* Top Header - Branding */}
         <div className="flex items-center justify-between w-full border-b border-white/10 pb-3">
@@ -411,7 +411,7 @@ export function OneLinerSlide({ images, onUploadImage, onResetImage }: SlideProp
           backgroundImage: `repeating-linear-gradient(0deg, ${x.gold} 0 1px, transparent 1px 48px), repeating-linear-gradient(90deg, ${x.gold} 0 1px, transparent 1px 48px)`
         }}
       />
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-8 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>One Liner / High Concept</SectionBadge>
         
         <h1 className="serif mt-2 text-[32px] md:text-[42px] font-extrabold text-[#4A0A0A] uppercase tracking-wide leading-tight">
@@ -549,7 +549,7 @@ export function OpportunitySlide({ images, onUploadImage, onResetImage }: SlideP
           background: `radial-gradient(70% 60% at 20% 20%, ${x.maroon} 0%, transparent 60%), radial-gradient(60% 60% at 90% 80%, rgba(184,134,11,0.18) 0%, transparent 60%)`
         }}
       />
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-8 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>The Audience Opportunity</SectionBadge>
         
         <h1 className="serif mt-2 text-[32px] md:text-[42px] font-extrabold text-[#FFD978] uppercase tracking-wide leading-tight">
@@ -652,7 +652,7 @@ export function OpportunitySlide({ images, onUploadImage, onResetImage }: SlideP
 export function LookFeelSlide({ images, onUploadImage, onResetImage }: SlideProps) {
   return (
     <div className="slide w-full h-full bg-[#FFF8E7] text-[#1A1A1A] flex max-w-[100vw] overflow-hidden">
-      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 py-8 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>Look • Feel • Tone</SectionBadge>
         
         <h1 className="serif mt-2 text-[32px] md:text-[42px] font-extrabold text-[#4A0A0A] uppercase tracking-wide leading-tight">
@@ -786,7 +786,7 @@ export function ProfShyamSlide({ images, onUploadImage, onResetImage }: SlidePro
         }}
       />
       
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-8 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>Character Blueprint • Protagonist</SectionBadge>
         
         <h1 className="serif mt-2 text-[32px] md:text-[42px] font-extrabold text-[#FFD978] uppercase tracking-wide leading-tight">
@@ -892,7 +892,7 @@ export function CastSlide({ images, onUploadImage, onResetImage }: SlideProps) {
 
   return (
     <div className="slide w-full h-full bg-[#FFF8E7] text-[#1A1A1A] flex max-w-[100vw] overflow-hidden">
-      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 py-6 md:py-8 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <SectionBadge>All-Star Cast • Production Candidates</SectionBadge>
           <span className="text-[9px] tracking-widest uppercase px-3 py-1 rounded-full border bg-white text-[#8B6914] border-[#B8860B]/30 font-bold font-mono">
@@ -989,7 +989,7 @@ export function COPSlide({ images, onUploadImage, onResetImage }: SlideProps) {
 
   return (
     <div className="slide w-full h-full bg-[#FFF8E7] text-[#1A1A1A] flex max-w-[100vw] overflow-hidden">
-      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 py-6 md:py-8 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>Resource Allocation • Dynamic & Scalable Budgeting</SectionBadge>
         
         <h1 className="serif mt-2 text-[32px] md:text-[42px] font-extrabold text-[#4A0A0A] uppercase tracking-wide leading-tight">
@@ -1141,7 +1141,7 @@ export function RecoverySlide({ images, onUploadImage, onResetImage }: SlideProp
           background: `radial-gradient(70% 70% at 50% 0%, ${x.maroon} 0%, transparent 60%), linear-gradient(180deg, #1A1A1A 0%, #121212 100%)`
         }}
       />
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-10 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-10 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>Recovery and ROI</SectionBadge>
         
         <h2 className="serif mt-3 text-[28px] md:text-[40px] leading-[0.95] font-semibold text-white">
@@ -1290,7 +1290,7 @@ export function NextStepsSlide({ onCTAClick, images, onUploadImage, onResetImage
           background: `radial-gradient(80% 80% at 50% 0%, rgba(184,134,11,0.18) 0%, transparent 60%), radial-gradient(60% 60% at 0% 100%, rgba(74,10,10,0.1) 0%, transparent 60%)`
         }}
       />
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-6 md:py-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-8 grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-start lg:items-center overflow-y-auto overflow-x-hidden h-full">
         
         {/* Why Now */}
         <div>
@@ -1435,7 +1435,7 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
         }}
       />
       
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-6 flex flex-col justify-center overflow-y-auto overflow-x-hidden max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-6 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
         <SectionBadge>ABOUT THE CREATOR OF THE PROJECT</SectionBadge>
         
         <h1 className="serif mt-1 text-[26px] md:text-[36px] font-extrabold text-[#FFD978] uppercase tracking-wide leading-tight">
@@ -1610,7 +1610,7 @@ export function ProductionFramesSlide({ frames = {}, onUploadFrame, onDeleteFram
         }}
       />
       
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 py-6 flex flex-col justify-center overflow-y-auto max-h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-6 flex flex-col justify-start md:justify-center overflow-y-auto h-full">
         <SectionBadge>PRODUCTION END PRODUCT SHOWCASE</SectionBadge>
         
         <h1 className="serif mt-1 text-[26px] md:text-[36px] font-extrabold text-[#FFD978] uppercase tracking-wide leading-tight">

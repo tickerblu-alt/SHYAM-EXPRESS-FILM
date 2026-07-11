@@ -604,7 +604,7 @@ export default function App() {
       </header>
 
       {/* 3. ACTIVE SLIDE VIEW WITH ANIMATED PRESENCE */}
-      <main className="relative w-full h-full pt-[56px] overflow-hidden">
+      <main className="relative w-full h-[calc(100svh-56px)] mt-[56px] overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -622,28 +622,28 @@ export default function App() {
         <button
           onClick={() => navigateToSlide(currentSlide - 1)}
           aria-label="Previous Slide"
-          className="no-print absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#1A1A1A]/80 hover:bg-[#B8860B] border border-white/10 text-white hover:text-black flex items-center justify-center shadow-lg transition duration-300 cursor-pointer"
+          className="no-print absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-12 md:h-12 rounded-full bg-[#1A1A1A]/70 hover:bg-[#B8860B] border border-white/10 text-white/80 hover:text-black flex items-center justify-center shadow-lg transition duration-300 cursor-pointer"
         >
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
 
         <button
           onClick={() => navigateToSlide(currentSlide + 1)}
           aria-label="Next Slide"
-          className="no-print absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 md:w-12 md:h-12 rounded-full bg-[#B8860B] hover:bg-[#FFD978] text-black flex items-center justify-center font-bold shadow-[0_8px_24px_rgba(184,134,11,0.3)] transition duration-300 cursor-pointer"
+          className="no-print absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-12 md:h-12 rounded-full bg-[#B8860B] hover:bg-[#FFD978] text-black/80 hover:text-black flex items-center justify-center font-bold shadow-[0_8px_24px_rgba(184,134,11,0.3)] transition duration-300 cursor-pointer"
         >
-          <ChevronRight className="w-6 h-6" />
+          <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
         </button>
 
         {/* 5. SLIDE JUMP BULLET POINTS (BOTTOM RAIL) */}
-        <div className="no-print absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4.5 py-2.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 shadow-lg">
+        <div className="no-print absolute bottom-4 md:bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4.5 md:py-2.5 rounded-full bg-black/75 backdrop-blur-md border border-white/10 shadow-lg max-w-[95vw] overflow-x-auto overflow-y-hidden scrollbar-none">
           {Array.from({ length: TOTAL_SLIDES }).map((_, idx) => {
             const isActive = idx === currentSlide;
             return (
               <button
                 key={idx}
                 onClick={() => navigateToSlide(idx)}
-                className="group relative p-1 cursor-pointer"
+                className="group relative p-1 cursor-pointer shrink-0"
                 aria-label={`Jump to slide ${idx + 1}`}
               >
                 <div
@@ -651,12 +651,12 @@ export default function App() {
                     isActive ? "w-8" : "w-[6px] bg-white/20 group-hover:bg-white/50"
                   }`}
                   style={
-                    isActive
-                      ? {
-                          background: `linear-gradient(90deg, ${x.gold}, ${x.goldLight})`
-                        }
-                      : {}
-                  }
+                     isActive
+                       ? {
+                           background: `linear-gradient(90deg, ${x.gold}, ${x.goldLight})`
+                         }
+                       : {}
+                   }
                 />
                 
                 {/* Floating tooltip preview for each slide */}
