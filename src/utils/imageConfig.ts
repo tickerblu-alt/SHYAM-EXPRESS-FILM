@@ -28,7 +28,7 @@ import localShyamExpressLogo from "../assets/images/shyam_express_logo_178366503
 
 export const IMAGES = {
   // 1. Title Slide Hero / Poster Background
-  khatuShyamHero: localKhatuShyamHero, // Replace with "https://your-url.png" if needed
+  khatuShyamHero: localKhatuShyamHero, // Replace with "https://i.postimg.cc/RqrNbfpS/shyam-express-poster-9.webp" if needed
 
   // 2. Cast Members
   sumedhMudgalkar: localSumedhMudgalkar, // Replace with "https://your-url.png" if needed
