@@ -28,20 +28,22 @@ import localShyamExpressLogo from "../assets/images/shyam_express_logo_178366503
 
 export const IMAGES = {
   // 1. Title Slide Hero / Poster Background
-  khatuShyamHero: localKhatuShyamHero, // Replace with "https://i.postimg.cc/RqrNbfpS/shyam-express-poster-9.webp" if needed
+  // 💡 To change, replace with your direct link (e.g. "https://i.postimg.cc/...")
+  khatuShyamHero: "https://i.postimg.cc/RqrNbfpS/shyam-express-poster-9.webp", 
 
   // 2. Cast Members
-  sumedhMudgalkar: localSumedhMudgalkar, // Replace with "https://your-url.png" if needed
-  divyaDutta: localDivyaDutta,           // Replace with "https://your-url.png" if needed
-  prajaktaMali: localPrajaktaMali,       // Replace with "https://your-url.png" if needed
+  sumedhMudgalkar: localSumedhMudgalkar, 
+  divyaDutta: localDivyaDutta,           
+  prajaktaMali: localPrajaktaMali,       
   
   // 3. Protagonist Character Blueprints
-  profShyam: localProfShyam,             // Replace with "https://your-url.png" if needed
+  profShyam: localProfShyam,             
 
   // 4. Executive & Mentorship Portraits
-  hemantMentoring: localHemantMentoring, // Replace with "https://i.postimg.cc/7hQ0mf0K/HEMANT-DAS-MONTAGE.png" if needed
-  hemantNilimDas: localHemantNilimDas,   // Replace with "https://your-url.png" if needed
+  // 💡 To change, replace with your direct link (e.g. "https://i.postimg.cc/...")
+  hemantMentoring: "https://i.postimg.cc/7hQ0mf0K/HEMANT-DAS-MONTAGE.png", 
+  hemantNilimDas: localHemantNilimDas,   
 
   // 5. Studio Branding & Logos
-  shyamExpressLogo: localShyamExpressLogo // Replace with "https://your-url.png" if needed
+  shyamExpressLogo: localShyamExpressLogo 
 };
