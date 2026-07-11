@@ -1,12 +1,14 @@
 /**
  * Shyam Express Pitch Deck - Central Image Asset Configuration
  * 
- * 💡 HOW TO MANUALLY ADD YOUR OWN IMAGES (.png / .jpg / etc.):
- * If you deploy to Vercel and some local images do not show up, or you want to use your own assets:
- * 1. Upload your image to an online image host (like Imgur, Postimages, or your own server/Vercel public/ folder).
- * 2. Get the direct image link (it must end with .png, .jpg, or .jpeg, e.g. "https://i.imgur.com/your-image.png").
- * 3. Replace the imported file variables below with your direct URL string (e.g. khatuShyamHero: "https://i.imgur.com/...").
- * 4. Save this file, and your images will immediately display perfectly on Vercel!
+ * 💡 HOW TO CONVERT YOUR OWN IMAGES (.png / .jpg / .webp) TO URLS AND WHERE TO PUSH THEM:
+ * 1. Go to a free image hosting site like https://postimages.org/ or https://imgur.com/
+ * 2. Upload your local image file.
+ * 3. Once uploaded, copy the "Direct Link" (It MUST end with .png, .jpg, .jpeg, or .webp).
+ *    - Example: https://i.postimg.cc/RqrNbfpS/shyam-express-poster-9.webp
+ * 4. Paste that link directly inside the quotes below for the correct slide (e.g. khatuShyamHero: "https://i.postimg.cc/...").
+ * 5. If any link is empty ("") or contains "your-direct-link", it will automatically fall back
+ *    to the high-quality preloaded local image so your app never looks broken!
  */
 
 // @ts-ignore
@@ -26,24 +28,55 @@ import localPrajaktaMali from "../assets/images/prajakta_mali_actress_1783617922
 // @ts-ignore
 import localShyamExpressLogo from "../assets/images/shyam_express_logo_1783665032905.jpg";
 
+// Smart helper to use custom URL if valid, otherwise fall back to pre-packaged asset
+const getUrl = (customUrl: string, fallbackAsset: string): string => {
+  if (!customUrl || customUrl.trim() === "" || customUrl.includes("your-direct-link")) {
+    return fallbackAsset;
+  }
+  return customUrl.trim();
+};
+
+// 🌟 EDIT THE LINKS INSIDE THE QUOTES BELOW 🌟
 export const IMAGES = {
   // 1. Title Slide Hero / Poster Background
-  // 💡 To change, replace with your direct link (e.g. "https://i.postimg.cc/...")
-  khatuShyamHero: "https://i.postimg.cc/RqrNbfpS/shyam-express-poster-9.webp", 
+  khatuShyamHero: getUrl(
+    "https://i.postimg.cc/RqrNbfpS/shyam-express-poster-9.webp", 
+    localKhatuShyamHero
+  ),
 
   // 2. Cast Members
-  sumedhMudgalkar: localSumedhMudgalkar, 
-  divyaDutta: localDivyaDutta,           
-  prajaktaMali: localPrajaktaMali,       
+  sumedhMudgalkar: getUrl(
+    "https://i.postimg.cc/your-direct-link/sumedh_mudgalkar.jpg", 
+    localSumedhMudgalkar
+  ), 
+  divyaDutta: getUrl(
+    "https://i.postimg.cc/your-direct-link/divya_dutta.jpg", 
+    localDivyaDutta
+  ),           
+  prajaktaMali: getUrl(
+    "https://i.postimg.cc/your-direct-link/prajakta_mali.jpg", 
+    localPrajaktaMali
+  ),       
   
   // 3. Protagonist Character Blueprints
-  profShyam: localProfShyam,             
+  profShyam: getUrl(
+    "https://i.postimg.cc/your-direct-link/prof_shyam.jpg", 
+    localProfShyam
+  ),             
 
   // 4. Executive & Mentorship Portraits
-  // 💡 To change, replace with your direct link (e.g. "https://i.postimg.cc/...")
-  hemantMentoring: "https://i.postimg.cc/7hQ0mf0K/HEMANT-DAS-MONTAGE.png", 
-  hemantNilimDas: localHemantNilimDas,   
+  hemantMentoring: getUrl(
+    "https://i.postimg.cc/7hQ0mf0K/HEMANT-DAS-MONTAGE.png", 
+    localHemantMentoring
+  ), 
+  hemantNilimDas: getUrl(
+    "https://i.postimg.cc/your-direct-link/hemant_nilim_das.jpg", 
+    localHemantNilimDas
+  ),   
 
   // 5. Studio Branding & Logos
-  shyamExpressLogo: localShyamExpressLogo 
+  shyamExpressLogo: getUrl(
+    "https://i.postimg.cc/your-direct-link/shyam_express_logo.jpg", 
+    localShyamExpressLogo
+  )
 };

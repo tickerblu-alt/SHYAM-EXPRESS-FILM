@@ -1455,7 +1455,7 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
         }}
       />
       
-      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-24 md:py-6 flex flex-col justify-start md:justify-center overflow-y-auto overflow-x-hidden h-full">
+      <div className="relative w-full max-w-[1200px] mx-auto px-6 md:px-12 pt-6 pb-28 md:py-8 flex flex-col justify-start overflow-y-auto overflow-x-hidden h-full custom-scrollbar">
         <SectionBadge>ABOUT THE CREATOR OF THE PROJECT</SectionBadge>
         
         <h1 className="serif mt-1 text-[26px] md:text-[36px] font-extrabold text-[#FFD978] uppercase tracking-wide leading-tight">
@@ -1485,7 +1485,8 @@ export function AboutCreatorSlide({ images, onUploadImage, onResetImage }: Slide
               images={images}
               onUploadImage={onUploadImage}
               onResetImage={onResetImage}
-              aspectClass="aspect-[3/4]"
+              aspectClass="aspect-[1.5/1] md:aspect-[3/4]"
+              className="max-w-[280px] md:max-w-none mx-auto w-full"
               defaultLabel="Creator Portrait"
               defaultImage={hemantMentoring}
             />
