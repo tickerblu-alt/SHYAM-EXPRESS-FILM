@@ -39,7 +39,7 @@ export const IMAGES = {
   profShyam: localProfShyam,             // Replace with "https://your-url.png" if needed
 
   // 4. Executive & Mentorship Portraits
-  hemantMentoring: localHemantMentoring, // Replace with "https://your-url.png" if needed
+  hemantMentoring: localHemantMentoring, // Replace with "https://i.postimg.cc/7hQ0mf0K/HEMANT-DAS-MONTAGE.png" if needed
   hemantNilimDas: localHemantNilimDas,   // Replace with "https://your-url.png" if needed
 
   // 5. Studio Branding & Logos
